@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import timber.log.Timber;
+
 public class ContactsActivity extends AppCompatActivity {
 
     static final int PICK_CONTACT_REQUEST = 1;
@@ -23,6 +25,7 @@ public class ContactsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+        Timber.plant(new Timber.DebugTree());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -35,6 +38,7 @@ public class ContactsActivity extends AppCompatActivity {
 
                 // Where to get contacts after clicking on the 'fab' button
                 Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
                 //Start activity for result so it would popup the contacts select screen and able to retrieve the result for later usage
                 //if not it would just be startActivity.
                 startActivityForResult(intent, PICK_CONTACT_REQUEST);
@@ -67,6 +71,7 @@ public class ContactsActivity extends AppCompatActivity {
     //From Google documentation
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         // Check which request it is that we're responding to
         if (requestCode == PICK_CONTACT_REQUEST) {
             // Make sure the request was successful
@@ -74,24 +79,27 @@ public class ContactsActivity extends AppCompatActivity {
                 // Get the URI that points to the selected contact
                 Uri contactUri = data.getData();
                 // We only need the NUMBER column, because there will be only one row in the result
-                String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
+                String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
 
                 // Perform the query on the contact to get the NUMBER column
                 // We don't need a selection or sort order (there's only one result for the given URI)
                 // CAUTION: The query() method should be called from a separate thread to avoid blocking
                 // your app's UI thread. (For simplicity of the sample, this code doesn't do that.)
                 // Consider using <code><a href="/reference/android/content/CursorLoader.html">CursorLoader</a></code> to perform the query.
-                Cursor cursor = getContentResolver()
-                        .query(contactUri, projection, null, null, null);
+                Cursor cursor = getContentResolver().query(contactUri, projection, null, null, null);
                 cursor.moveToFirst();
 
                 // Retrieve the phone number from the NUMBER column
                 String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                cursor.moveToFirst();
                 String name =cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 
-
+                Timber.d("Number: " + number);
+                Timber.d("Name: " + name);
                 // Do something with the phone number...
             }
         }
     }
+
+
 }
