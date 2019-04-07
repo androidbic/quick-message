@@ -2,9 +2,13 @@ package com.boi.bic.quickmessage;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,11 +18,16 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+
 import timber.log.Timber;
 
 public class ContactsActivity extends AppCompatActivity {
 
     static final int PICK_CONTACT_REQUEST = 1;
+    private ArrayList<Contact> contactList;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -28,7 +37,9 @@ public class ContactsActivity extends AppCompatActivity {
         Timber.plant(new Timber.DebugTree());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        if(!hasContacts()) {
+            contactList = new ArrayList<Contact>();
+        }
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,7 +53,6 @@ public class ContactsActivity extends AppCompatActivity {
                 //Start activity for result so it would popup the contacts select screen and able to retrieve the result for later usage
                 //if not it would just be startActivity.
                 startActivityForResult(intent, PICK_CONTACT_REQUEST);
-
             }
         });
     }
@@ -94,12 +104,38 @@ public class ContactsActivity extends AppCompatActivity {
                 cursor.moveToFirst();
                 String name =cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 
-                Timber.d("Number: " + number);
-                Timber.d("Name: " + name);
-                // Do something with the phone number...
+                Contact contact = new Contact(name, number);
+                contactList.add(contact);
+//                Timber.d("Number: " + number);
+//                Timber.d("Name: " + name);
+                Timber.d("Contact List: " + contactList);
+
             }
         }
     }
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        SharedPreferences mPref = this.getSharedPreferences("contacts", MODE_PRIVATE);
+//        Editor prefsEditor = mPref.edit();
+//        Gson gson = new Gson();
+//        for(int i = 0; i < contactList.size(); i++)
+//            String json = gson.toJson(contactList.get(i));
+//        }
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences mPref = this.getSharedPreferences("contacts", MODE_PRIVATE);
+    }
+
+    private boolean hasContacts() {
+        SharedPreferences mPref = this.getSharedPreferences("contacts", MODE_PRIVATE);
+        boolean hasKey = mPref.contains("contacts");
+        Timber.d("If has contacts: " + hasKey);
+
+        return hasKey;
+    }
 
 }
