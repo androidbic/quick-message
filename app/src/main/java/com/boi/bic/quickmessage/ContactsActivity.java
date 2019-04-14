@@ -19,15 +19,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import timber.log.Timber;
 
 public class ContactsActivity extends AppCompatActivity {
 
     static final int PICK_CONTACT_REQUEST = 1;
-    private ArrayList<Contact> contactList;
+    protected ArrayList<Contact> contactList  = new ArrayList<Contact>();
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -37,8 +40,14 @@ public class ContactsActivity extends AppCompatActivity {
         Timber.plant(new Timber.DebugTree());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         if(!hasContacts()) {
-            contactList = new ArrayList<Contact>();
+            Contact contact = new Contact("Testing tester", "000-000-000");
+            contactList.add(contact);
+            Gson gson = new Gson();
+            String json = gson.toJson(contactList);
+            Timber.d("oncreate: " + json);
+
         }
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -53,6 +62,7 @@ public class ContactsActivity extends AppCompatActivity {
                 //Start activity for result so it would popup the contacts select screen and able to retrieve the result for later usage
                 //if not it would just be startActivity.
                 startActivityForResult(intent, PICK_CONTACT_REQUEST);
+
             }
         });
     }
@@ -98,37 +108,51 @@ public class ContactsActivity extends AppCompatActivity {
                 // Consider using <code><a href="/reference/android/content/CursorLoader.html">CursorLoader</a></code> to perform the query.
                 Cursor cursor = getContentResolver().query(contactUri, projection, null, null, null);
                 cursor.moveToFirst();
-
+                Gson gson = new Gson();
+                String json = gson.toJson(contactList);
+                Timber.d("Result before adding name: " + json);
                 // Retrieve the phone number from the NUMBER column
                 String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                cursor.moveToFirst();
                 String name =cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                Contact contact = new Contact(name,number);
 
-                Contact contact = new Contact(name, number);
-                contactList.add(contact);
-//                Timber.d("Number: " + number);
-//                Timber.d("Name: " + name);
-                Timber.d("Contact List: " + contactList);
+                //not working here
+                if(!contactList.contains(contact.getName())){
+                    contactList.add(contact);
+                }
+                else {
+                    Timber.d("Result: already added" );
+                }
+                Timber.d("Result: " + gson.toJson(contactList));
 
             }
         }
     }
-    @Override
-    protected void onPause() {
-        super.onPause();
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
 //        SharedPreferences mPref = this.getSharedPreferences("contacts", MODE_PRIVATE);
 //        Editor prefsEditor = mPref.edit();
 //        Gson gson = new Gson();
-//        for(int i = 0; i < contactList.size(); i++)
-//            String json = gson.toJson(contactList.get(i));
-//        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        SharedPreferences mPref = this.getSharedPreferences("contacts", MODE_PRIVATE);
-    }
+//        String json = gson.toJson(contactList);
+//        prefsEditor.putString("MyContactList", json);
+//        prefsEditor.commit();
+//
+//
+//
+//    }
+//
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        SharedPreferences mPref = this.getSharedPreferences("contacts", MODE_PRIVATE);
+//        Gson gson = new Gson();
+//        String json = mPref.getString("MyContactList", "");
+//        Type type = new TypeToken<ArrayList<Contact>>(){}.getType();
+//        contactList = gson.fromJson(json, type);
+//        Timber.d("Resume: " + json);
+//
+//    }
 
     private boolean hasContacts() {
         SharedPreferences mPref = this.getSharedPreferences("contacts", MODE_PRIVATE);
