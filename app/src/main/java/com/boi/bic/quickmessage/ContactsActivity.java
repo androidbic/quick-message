@@ -40,12 +40,12 @@ public class ContactsActivity extends AppCompatActivity {
         Timber.plant(new Timber.DebugTree());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         if(savedInstanceState == null || !savedInstanceState.containsKey("contactList")) {
-            contactList = new ArrayList<Contact>();
+            loadData();
         }
         else {
             contactList = savedInstanceState.getParcelableArrayList("contactList");
-
         }
 
 //        if(!hasContacts()) {
@@ -74,10 +74,31 @@ public class ContactsActivity extends AppCompatActivity {
         });
     }
 
+    private void saveData() {
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(contactList);
+        editor.putString("contactList", json);
+        editor.apply();
+    }
+
+    private void loadData() {
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("contactList", null);
+        Type type = new TypeToken<ArrayList<Contact>>() {}.getType();
+        contactList = gson.fromJson(json, type);
+
+        if (contactList == null) {
+            contactList = new ArrayList<>();
+        }
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("contactList", contactList);
         super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("contactList", contactList);
     }
 
     @Override
