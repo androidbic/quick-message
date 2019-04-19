@@ -48,14 +48,6 @@ public class ContactsActivity extends AppCompatActivity {
             contactList = savedInstanceState.getParcelableArrayList("contactList");
         }
 
-//        if(!hasContacts()) {
-//            Contact contact = new Contact("Testing tester", "000-000-000");
-//            contactList.add(contact);
-//            Gson gson = new Gson();
-//            String json = gson.toJson(contactList);
-//            Timber.d("oncreate: " + json);
-//
-//        }
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,25 +167,7 @@ public class ContactsActivity extends AppCompatActivity {
 //
 //
 //    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        SharedPreferences mPref = this.getSharedPreferences("contacts", MODE_PRIVATE);
-//        Gson gson = new Gson();
-//        String json = mPref.getString("MyContactList", "");
-//        Type type = new TypeToken<ArrayList<Contact>>(){}.getType();
-//        contactList = gson.fromJson(json, type);
-//        Timber.d("Resume: " + json);
-//
-//    }
 
-    private boolean hasContacts() {
-        SharedPreferences mPref = this.getSharedPreferences("contacts", MODE_PRIVATE);
-        boolean hasKey = mPref.contains("contacts");
-        Timber.d("If has contacts: " + hasKey);
 
-        return hasKey;
-    }
 
 }
