@@ -1,6 +1,9 @@
 package com.boi.bic.quickmessage;
 
-public class Contact {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Contact implements Parcelable {
     private String name;
     private String number;
 
@@ -15,5 +18,16 @@ public class Contact {
 
     public String getNumber() {
         return number;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(this.name);
+        parcel.writeString(this.number);
     }
 }

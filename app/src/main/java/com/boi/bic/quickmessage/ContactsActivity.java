@@ -30,7 +30,7 @@ import timber.log.Timber;
 public class ContactsActivity extends AppCompatActivity {
 
     static final int PICK_CONTACT_REQUEST = 1;
-    protected ArrayList<Contact> contactList  = new ArrayList<Contact>();
+    protected ArrayList<Contact> contactList;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -40,15 +40,22 @@ public class ContactsActivity extends AppCompatActivity {
         Timber.plant(new Timber.DebugTree());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        if(!hasContacts()) {
-            Contact contact = new Contact("Testing tester", "000-000-000");
-            contactList.add(contact);
-            Gson gson = new Gson();
-            String json = gson.toJson(contactList);
-            Timber.d("oncreate: " + json);
+        if(savedInstanceState == null || !savedInstanceState.containsKey("contactList")) {
+            contactList = new ArrayList<Contact>();
+        }
+        else {
+            contactList = savedInstanceState.getParcelableArrayList("contactList");
 
         }
+
+//        if(!hasContacts()) {
+//            Contact contact = new Contact("Testing tester", "000-000-000");
+//            contactList.add(contact);
+//            Gson gson = new Gson();
+//            String json = gson.toJson(contactList);
+//            Timber.d("oncreate: " + json);
+//
+//        }
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +72,12 @@ public class ContactsActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("contactList", contactList);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
