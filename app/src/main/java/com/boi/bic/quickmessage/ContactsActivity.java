@@ -13,6 +13,8 @@ import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
@@ -28,9 +30,11 @@ import java.util.Arrays;
 import timber.log.Timber;
 
 public class ContactsActivity extends AppCompatActivity {
-
+    private RecyclerView mRecyclerView;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private ContactAdapter mAdapter;
     static final int PICK_CONTACT_REQUEST = 1;
-    protected ArrayList<Contact> contactList;
+    ArrayList<Contact> mContactList;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -45,9 +49,9 @@ public class ContactsActivity extends AppCompatActivity {
             loadData();
         }
         else {
-            contactList = savedInstanceState.getParcelableArrayList("contactList");
+            mContactList = savedInstanceState.getParcelableArrayList("contactList");
         }
-
+        initRecyclerView();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +74,7 @@ public class ContactsActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
-        String json = gson.toJson(contactList);
+        String json = gson.toJson(mContactList);
         editor.putString("contactList", json);
         editor.apply();
     }
@@ -80,17 +84,35 @@ public class ContactsActivity extends AppCompatActivity {
         Gson gson = new Gson();
         String json = sharedPreferences.getString("contactList", null);
         Type type = new TypeToken<ArrayList<Contact>>() {}.getType();
-        contactList = gson.fromJson(json, type);
+        mContactList = gson.fromJson(json, type);
 
-        if (contactList == null) {
-            contactList = new ArrayList<>();
+        if (mContactList == null) {
+            mContactList = new ArrayList<>();
         }
     }
+    private void initRecyclerView() {
+        mRecyclerView =  findViewById(R.id.contact_recyclerview);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        mAdapter = new ContactAdapter(mContactList);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    // Inflate the layout for this fragment
+//    View layout = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+//    mRecyclerView = (RecyclerView) layout.findViewById(R.id.drawerList);
+//    adapter = new DrawerAdapter(getActivity(), getData());
+//        mRecyclerView.setAdapter(adapter);
+//        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        return layout;
+//}
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("contactList", contactList);
+        outState.putParcelableArrayList("contactList", mContactList);
     }
 
     @Override
@@ -135,7 +157,7 @@ public class ContactsActivity extends AppCompatActivity {
                 Cursor cursor = getContentResolver().query(contactUri, projection, null, null, null);
                 cursor.moveToFirst();
                 Gson gson = new Gson();
-                String json = gson.toJson(contactList);
+                String json = gson.toJson(mContactList);
                 Timber.d("Result before adding name: " + json);
                 // Retrieve the phone number from the NUMBER column
                 String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
@@ -143,13 +165,14 @@ public class ContactsActivity extends AppCompatActivity {
                 Contact contact = new Contact(name,number);
 
                 //not working here
-                if(!contactList.contains(contact.getName())){
-                    contactList.add(contact);
+                if(!mContactList.contains(contact.getName())){
+                    mContactList.add(contact);
+//                    mAdapter.notifyItemInserted(mContactList.size());
                 }
                 else {
                     Timber.d("Result: already added" );
                 }
-                Timber.d("Result: " + gson.toJson(contactList));
+                Timber.d("Result: " + gson.toJson(mContactList));
 
             }
         }
