@@ -167,7 +167,7 @@ public class ContactsActivity extends AppCompatActivity {
                 //not working here
                 if(!mContactList.contains(contact.getName())){
                     mContactList.add(contact);
-//                    mAdapter.notifyItemInserted(mContactList.size());
+                    mAdapter.notifyItemInserted(mContactList.size());
                 }
                 else {
                     Timber.d("Result: already added" );
