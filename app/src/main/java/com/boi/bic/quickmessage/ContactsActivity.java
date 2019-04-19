@@ -154,20 +154,10 @@ public class ContactsActivity extends AppCompatActivity {
             }
         }
     }
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        SharedPreferences mPref = this.getSharedPreferences("contacts", MODE_PRIVATE);
-//        Editor prefsEditor = mPref.edit();
-//        Gson gson = new Gson();
-//        String json = gson.toJson(contactList);
-//        prefsEditor.putString("MyContactList", json);
-//        prefsEditor.commit();
-//
-//
-//
-//    }
-
-
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveData();
+    }
+    
 }
