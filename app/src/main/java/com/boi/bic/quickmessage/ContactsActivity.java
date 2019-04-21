@@ -23,21 +23,29 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class ContactsActivity extends AppCompatActivity {
-    private RecyclerView mRecyclerView;
+    RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private ContactAdapter mAdapter;
     static final int PICK_CONTACT_REQUEST = 1;
     ArrayList<Contact> mContactList;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+        ButterKnife.bind(this);
         Timber.plant(new Timber.DebugTree());
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         if(savedInstanceState == null || !savedInstanceState.containsKey("contactList")) {
@@ -47,7 +55,7 @@ public class ContactsActivity extends AppCompatActivity {
             mContactList = savedInstanceState.getParcelableArrayList("contactList");
         }
         initRecyclerView();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

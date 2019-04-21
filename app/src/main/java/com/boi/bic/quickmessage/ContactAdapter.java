@@ -8,6 +8,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactViewHolder> {
     private ArrayList<Contact> mContactList;
 
@@ -34,11 +37,13 @@ class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactViewHold
     }
 
     public class ContactViewHolder extends RecyclerView.ViewHolder {
-        public TextView mTextViewName;
 
-        public ContactViewHolder(View itemView) {
-            super(itemView);
-            mTextViewName = itemView.findViewById(R.id.text_view_name);
+        @BindView(R.id.text_view_name)
+        TextView mTextViewName;
+
+        public ContactViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
         }
     }
     public void removeItem(int position) {
