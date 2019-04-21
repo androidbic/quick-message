@@ -43,9 +43,6 @@ class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactViewHold
     }
     public void removeItem(int position) {
         mContactList.remove(position);
-        // notify the item removed by position
-        // to perform recycler view delete animations
-        // NOTE: don't call notifyDataSetChanged()
         notifyItemRemoved(position);
     }
 }

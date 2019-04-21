@@ -1,17 +1,13 @@
 package com.boi.bic.quickmessage;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +22,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import timber.log.Timber;
 
@@ -37,7 +32,6 @@ public class ContactsActivity extends AppCompatActivity {
     static final int PICK_CONTACT_REQUEST = 1;
     ArrayList<Contact> mContactList;
 
-    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +85,7 @@ public class ContactsActivity extends AppCompatActivity {
             mContactList = new ArrayList<>();
         }
     }
+
     private void initRecyclerView() {
         mRecyclerView =  findViewById(R.id.contact_recyclerview);
         mRecyclerView.setHasFixedSize(true);
@@ -120,16 +115,6 @@ public class ContactsActivity extends AppCompatActivity {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
-
-    // Inflate the layout for this fragment
-//    View layout = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
-//    mRecyclerView = (RecyclerView) layout.findViewById(R.id.drawerList);
-//    adapter = new DrawerAdapter(getActivity(), getData());
-//        mRecyclerView.setAdapter(adapter);
-//        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        return layout;
-//}
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -199,10 +184,10 @@ public class ContactsActivity extends AppCompatActivity {
             }
         }
     }
+
     @Override
     protected void onPause() {
         super.onPause();
         saveData();
     }
-    
 }
