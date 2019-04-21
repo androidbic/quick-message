@@ -1,5 +1,7 @@
 package com.boi.bic.quickmessage;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +30,9 @@ class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactViewHold
     @Override
     public void onBindViewHolder(ContactViewHolder holder, int position) {
         Contact contactItem = mContactList.get(position);
-        holder.mTextViewName.setText(contactItem.getName());
+        holder.name.setText(contactItem.getName());
+
+
     }
 
     @Override
@@ -39,11 +43,25 @@ class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactViewHold
     public class ContactViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.text_view_name)
-        TextView mTextViewName;
+        TextView name;
+        View rootView;
 
         public ContactViewHolder(View view) {
             super(view);
+            rootView = view;
             ButterKnife.bind(this, view);
+            rootView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+
+                    Context context = view.getContext();
+                    Intent intent = new Intent(context, MessageActivity.class);
+                    intent.putExtra("name", mContactList.get(position).getName());
+                    intent.putExtra("number", mContactList.get(position).getNumber());
+                    context.startActivity(intent);
+                }
+            });
         }
     }
     public void removeItem(int position) {
